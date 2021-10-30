@@ -1,0 +1,50 @@
+{
+  "name": "link-item-resource-5e",
+  "title": "Link Item and Resource DnD5e",
+  "description": "Links an Actor Resource to an Item's Charges",
+  "version": "0.1.0",
+  "author": "Andrew Krigline",
+  "authors": [
+    {
+      "name": "Andrew Krigline",
+      "discord": "Calego#0914",
+      "url": "https://github.com/ElfFriend-DnD",
+      "ko-fi": "elffriend",
+      "patreon": "ElfFriend_DnD"
+    }
+  ],
+  "system": [ "dnd5e" ],
+  "scripts": [
+    "./scripts/module.js"
+  ],
+  "styles": [
+    "./styles/link-item-resource-5e.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "dependencies": [
+  ],
+  "minimumCoreVersion": "0.8.9",
+  "compatibleCoreVersion": "0.8.9",
+  "url": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e",
+  "bugs": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/issues",
+  "changelog": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/releases",
+  "manifest": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/releases/latest/download/module.json",
+  "download": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/releases/latest/download/module.zip",
+  "license": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/raw/main/LICENSE",
+  "readme": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/raw/main/README.md",
+  "flags": {
+    "allowBugReporter": true
+  },
+  "media": [
+    {
+      "type": "cover",
+      "url": "https://user-images.githubusercontent.com/7644614/138609250-9a3280cb-4b5d-4ce9-8255-ebcbec187093.jpg"
+    }
+  ]
+}
