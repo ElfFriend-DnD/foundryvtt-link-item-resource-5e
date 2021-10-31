@@ -250,6 +250,7 @@ class LinkItemResource5eActorSheet {
     // get the resources which have overrides to disable inputs
     indexesToDisable.forEach(index => {
       const element = resourceElements[index];
+
       // disable every input except the `value` input
       $(element).find('[name]').filter((index, el) => !el.name.includes('value'))
         .prop('disabled', true)
@@ -269,7 +270,7 @@ class LinkItemResource5eActorSheet {
 
     // get the resources which have overrides to disable inputs
     itemIdsToDisable.forEach(itemId => {
-      html.find(`[data-item-id=${itemId}] .item-uses input`)
+      html.find(`[data-item-id=${itemId}] .item-uses input, [data-item-id=${itemId}] .item-charges input`)
         .prop('disabled', true)
         .prop('title', game.i18n.localize(`${LinkItemResource5e.MODULE_NAME}.disabled-item-helper-text`));
     });
