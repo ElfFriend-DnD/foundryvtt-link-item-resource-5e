@@ -2,7 +2,7 @@
   "name": "link-item-resource-5e",
   "title": "Link Item and Resource DnD5e",
   "description": "Links an Actor Resource to an Item's Charges",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "Andrew Krigline",
   "authors": [
     {
@@ -47,7 +47,15 @@
   "media": [
     {
       "type": "cover",
-      "url": "https://user-images.githubusercontent.com/7644614/138609250-9a3280cb-4b5d-4ce9-8255-ebcbec187093.jpg"
+      "url": "https://user-images.githubusercontent.com/7644614/139600189-de391827-7e88-4748-9e3f-9bd6c2538cce.jpg"
+    },
+    {
+      "type": "screenshot",
+      "url": "https://user-images.githubusercontent.com/7644614/139600191-85f90ead-222a-4d5c-83a6-ff8d8c63134c.jpg"
+    },
+    {
+      "type": "screenshot",
+      "url": "https://user-images.githubusercontent.com/7644614/139600193-4f66564b-a274-4df7-8329-5cacca221da7.jpg"
     }
   ]
 }

@@ -10,3 +10,9 @@
 [![patreon](https://img.shields.io/badge/-patreon-%23FF424D)](https://www.patreon.com/ElfFriend_DnD)
 
 Adds the ability to link an item's charges to an actor's resource and thus keep the two always in sync.
+
+![An input is added to the item sheet.](https://user-images.githubusercontent.com/7644614/139600193-4f66564b-a274-4df7-8329-5cacca221da7.jpg)
+
+![When configured, the item uses overrides the actor's resources.](https://user-images.githubusercontent.com/7644614/139600191-85f90ead-222a-4d5c-83a6-ff8d8c63134c.jpg)
+
+https://user-images.githubusercontent.com/7644614/139600186-1f0eaa5e-bc43-4867-9e8b-3fdbef217382.mp4
