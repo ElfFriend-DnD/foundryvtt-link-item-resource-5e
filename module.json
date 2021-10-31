@@ -28,6 +28,9 @@
     }
   ],
   "dependencies": [
+    {
+      "name": "lib-wrapper"
+    }
   ],
   "minimumCoreVersion": "0.8.9",
   "compatibleCoreVersion": "0.8.9",
