@@ -14,5 +14,17 @@ Adds the ability to link an item's charges to an actor's resource and thus keep 
 ![An input is added to the item sheet.](https://user-images.githubusercontent.com/7644614/139600193-4f66564b-a274-4df7-8329-5cacca221da7.jpg)
 
 ![When configured, the item uses overrides the actor's resources.](https://user-images.githubusercontent.com/7644614/139600191-85f90ead-222a-4d5c-83a6-ff8d8c63134c.jpg)
+(Outlines added for demonstration)
 
 https://user-images.githubusercontent.com/7644614/139600186-1f0eaa5e-bc43-4867-9e8b-3fdbef217382.mp4
+
+## Compatibility Notes
+
+Kind of works with [Resource Icons](https://www.foundryvtt-hub.com/package/resource-icons/). Sometimes the number will not update until the actor is updated again.
+
+Tested with the following Actor Sheet Modules:
+
+- [Compact DnDBeyond 5e Character Sheet](https://www.foundryvtt-hub.com/package/compact-beyond-5e-sheet/) (pictured above)
+- [Tidy5e Sheet](https://www.foundryvtt-hub.com/package/tidy5e-sheet/)
+- [DNDBeyond Character Sheet for 5E](https://www.foundryvtt-hub.com/package/dndbeyond-character-sheet/)
+- [D&D 5e OGL Character Sheet](https://www.foundryvtt-hub.com/package/5e-ogl-character-sheet/)
