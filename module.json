@@ -17,9 +17,6 @@
   "scripts": [
     "./scripts/module.js"
   ],
-  "styles": [
-    "./styles/link-item-resource-5e.css"
-  ],
   "languages": [
     {
       "lang": "en",
