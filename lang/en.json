@@ -1,5 +1,7 @@
 {
   "link-item-resource-5e": {
-    "resource-link": "Override Actor Resource?"
+    "resource-link": "Override Actor Resource?",
+    "disabled-item-helper-text": "Linked to a Resource",
+    "disabled-resource-helper-text": "Linked to an Item"
   }
 }
