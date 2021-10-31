@@ -2,6 +2,7 @@
   "link-item-resource-5e": {
     "resource-link": "Override Actor Resource?",
     "disabled-item-helper-text": "Linked to a Resource",
-    "disabled-resource-helper-text": "Linked to an Item"
+    "disabled-resource-helper-text": "Linked to an Item",
+    "warn-multiple-overrides": "More than one item marked to override the same resource, Resources may be incorrect"
   }
 }

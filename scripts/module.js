@@ -16,7 +16,6 @@ class LinkItemResource5e {
 
     libWrapper.register(LinkItemResource5e.MODULE_NAME, 'CONFIG.Actor.documentClass.prototype.prepareData', LinkItemResource5eActor.prepareDerivedResources, "WRAPPER");
 
-    Hooks.on("preUpdateItem", LinkItemResource5eItem.handlePreItemUpdate);
     Hooks.on('renderItemSheet', LinkItemResource5eItemSheet.handleRender);
     Hooks.on('preUpdateActor', LinkItemResource5eActor.handlePreUpdateActor);
     Hooks.on('renderActorSheet5eCharacter', LinkItemResource5eActorSheet.handleActorSheetRender);
@@ -24,57 +23,6 @@ class LinkItemResource5e {
 }
 
 Hooks.on("setup", LinkItemResource5e.setup);
-
-/**
- * Contains all resource-linking logic related to the Item document
- */
-class LinkItemResource5eItem {
-  /**
-   * preUpdateItem hook callback
-   * Updates the parent actor's flags detailing which resources are overriden when
-   * the resource-link flag on the item is changed
-   * @param {*} item 
-   * @param {*} updateData 
-   * @returns 
-   */
-  static handlePreItemUpdate = (item, updateData) => {
-    const flagPath = `flags.${LinkItemResource5e.MODULE_NAME}.resource-link`;
-    const actor = item.actor;
-    const currentValue = item.getFlag(LinkItemResource5e.MODULE_NAME, 'resource-link');
-    const newValue = foundry.utils.getProperty(updateData, flagPath);
-
-    if (!foundry.utils.hasProperty(updateData, flagPath)) {
-      return;
-    }
-
-    if (item.parent?.type !== 'character' || !item.hasLimitedUses || !actor) {
-      return;
-    }
-
-    // either update the actor or we have to hijack the prepareData somehow
-    const currentOverrides = actor.getFlag(LinkItemResource5e.MODULE_NAME, 'resource-overrides');
-
-    const newFlags = {
-      ...currentOverrides,
-    }
-
-    // always remove this item from the mapping first to ensure the item is only in the overrides once
-    Object.keys(currentOverrides).forEach((resourceKey) => {
-      if (newFlags[resourceKey] === item.id) {
-        delete newFlags[currentValue];
-        newFlags[`-=${resourceKey}`] = null;
-      }
-    })
-
-    if (!!newValue) {
-      // the item now wants to link
-      newFlags[newValue] = item.id;
-    }
-
-    actor.setFlag(LinkItemResource5e.MODULE_NAME, 'resource-overrides', newFlags);
-  }
-}
-
 
 /**
  * Contains all resource-linking logic related to the ItemSheet
@@ -125,6 +73,38 @@ class LinkItemResource5eItemSheet {
  */
 class LinkItemResource5eActor {
   /**
+   * Builds resource overrides from actor item list
+   */
+  static getResourceOverrides(items) {
+    let warnings = new Set();
+
+    const filteredItems = items.filter(item => !!item.getFlag(LinkItemResource5e.MODULE_NAME, 'resource-link'));
+
+    if (!filteredItems.length) {
+      return {
+        resourceOverrides: undefined,
+        warnings: [],
+      }
+    }
+
+    const resourceOverrides = filteredItems.reduce((acc, item) => {
+      const resourceOverride = item.getFlag(LinkItemResource5e.MODULE_NAME, 'resource-link');
+
+      if (acc[resourceOverride]) {
+        warnings.add(`${LinkItemResource5e.MODULE_NAME}.warn-multiple-overrides`)
+      }
+
+      acc[resourceOverride] = item.id;
+      return acc;
+    }, {});
+
+    return {
+      resourceOverrides,
+      warnings: [...warnings.values()],
+    }
+  }
+
+  /**
    * `Actor5e.prepareData` WRAPPER
    * Overrides the flagged resources with item details.
    * Has to run after all the owned items have run `prepareFinalAttributes` so items have numerical charges
@@ -140,7 +120,9 @@ class LinkItemResource5eActor {
     const items = this.items;
 
     // Record<resourceName, itemId>
-    const resourceOverrides = this.getFlag(LinkItemResource5e.MODULE_NAME, 'resource-overrides');
+    const { resourceOverrides, warnings } = LinkItemResource5eActor.getResourceOverrides(items);
+
+    this._preparationWarnings.push(...warnings);
 
     if (!resourceOverrides) {
       return;
@@ -170,7 +152,7 @@ class LinkItemResource5eActor {
    * @returns 
    */
   static handlePreUpdateActor = (actor, updateData) => {
-    const currentOverrides = actor.getFlag(LinkItemResource5e.MODULE_NAME, 'resource-overrides');
+    const { resourceOverrides: currentOverrides } = LinkItemResource5eActor.getResourceOverrides(actor.items);
 
     // get any updates to the actor's resources
     const resourceUpdates = foundry.utils.getProperty(updateData, `data.resources`);
@@ -246,7 +228,7 @@ class LinkItemResource5eActorSheet {
    */
   static handleActorSheetRender = (actorSheet, html) => {
     const actor = actorSheet.actor;
-    const resourceOverrides = actor.getFlag(LinkItemResource5e.MODULE_NAME, 'resource-overrides');
+    const { resourceOverrides } = LinkItemResource5eActor.getResourceOverrides(actor.items);
 
     if (!resourceOverrides) {
       return;
