@@ -15,9 +15,9 @@ class LinkItemResource5e {
     loadTemplates(Object.values(this.TEMPLATES));
 
     libWrapper.register(LinkItemResource5e.MODULE_NAME, 'CONFIG.Actor.documentClass.prototype.prepareData', LinkItemResource5eActor.prepareDerivedResources, "WRAPPER");
+    libWrapper.register(LinkItemResource5e.MODULE_NAME, 'CONFIG.Actor.documentClass.prototype.update', LinkItemResource5eActor.prePreUpdateActor, "WRAPPER");
 
     Hooks.on('renderItemSheet', LinkItemResource5eItemSheet.handleRender);
-    Hooks.on('preUpdateActor', LinkItemResource5eActor.handlePreUpdateActor);
     Hooks.on('renderActorSheet5eCharacter', LinkItemResource5eActorSheet.handleActorSheetRender);
   }
 }
@@ -144,20 +144,22 @@ class LinkItemResource5eActor {
   }
 
   /**
-   * preUpdateActor hook callback
-   * Mutates `updateData` to correctly update the item instead of the actor resource in cases
-   * where the resource is overridden.
-   * @param {*} actor 
-   * @param {*} updateData 
-   * @returns 
+   * Wraps `Actor.update` so we can attack the update before it is diffed.
    */
-  static handlePreUpdateActor = (actor, updateData) => {
-    const { resourceOverrides: currentOverrides } = LinkItemResource5eActor.getResourceOverrides(actor.items);
+  static prePreUpdateActor(wrapped, updateRequest, ...args) {
+    const { resourceOverrides: currentOverrides } = LinkItemResource5eActor.getResourceOverrides(this.items);
 
-    // get any updates to the actor's resources
-    const resourceUpdates = foundry.utils.getProperty(updateData, `data.resources`);
-    if (!currentOverrides || !resourceUpdates) {
-      return;
+    if (!currentOverrides) {
+      // do nothing, move on
+      return wrapped(updateRequest, ...args);
+    }
+
+    const newUpdateRequest = {...foundry.utils.expandObject(updateRequest)};
+    const resourceUpdates = foundry.utils.getProperty(newUpdateRequest, `data.resources`);
+
+    if (!resourceUpdates) {
+      // do nothing, move on
+      return wrapped(updateRequest, ...args);
     }
 
     // array of resource keys which are being updated that have overrides
@@ -177,12 +179,14 @@ class LinkItemResource5eActor {
       }))
 
     // add the item updates to this update operation
-    updateData.items = [...(updateData?.items ?? []), ...itemUpdates];
+    newUpdateRequest.items = [...(updateRequest?.items ?? []), ...itemUpdates];
 
     // set the overridden resource update to undefined
     updatesToOverriddenResources.forEach((resourceKey) => {
-      foundry.utils.setProperty(updateData, `data.resources.${resourceKey}`, undefined);
+      foundry.utils.setProperty(newUpdateRequest, `data.resources.${resourceKey}`, undefined);
     });
+
+    return wrapped(newUpdateRequest, ...args);
   }
 }
 
