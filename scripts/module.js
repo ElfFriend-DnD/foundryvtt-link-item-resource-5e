@@ -43,7 +43,15 @@ class LinkItemResource5eItemSheet {
     const item = itemSheet.item;
     const actor = item.actor;
 
-    if (item.parent?.type !== 'character' || !item.hasLimitedUses || !actor) {
+    // javelins for example might be set to consume ammo of themselves
+    const isSelfConsumingAmmo = item.data.data.consume?.type === 'ammo' && item.data.data.consume?.target === item.id;
+
+    // consumables with the subtype "ammo" include arrows
+    const isConsumableAmmo = (item.data.type === "consumable") && (item.data.data.consumableType === "ammo");
+
+    const itemCanBeResource = item.hasLimitedUses || isSelfConsumingAmmo || isConsumableAmmo;
+
+    if (item.parent?.type !== 'character' || !itemCanBeResource || !actor) {
       return;
     }
 
@@ -60,7 +68,14 @@ class LinkItemResource5eItemSheet {
       currentValue,
     })
 
-    const el = html.find('.uses-per').first()
+    let el;
+    if (item.hasLimitedUses) {
+      el = html.find('.uses-per').first();
+    } else if (isSelfConsumingAmmo) {
+      el = html.find('.uses-per').last();
+    } else {
+      el = html.find('[name="data.consumableType"]').parents('.form-group');
+    }
 
     el.after(select);
     itemSheet.setPosition();
@@ -131,14 +146,34 @@ class LinkItemResource5eActor {
     Object.entries(resourceOverrides).forEach(([resource, itemId]) => {
       const relevantItem = items.get(itemId)
       if (!relevantItem) return;
+      const { quantity } = relevantItem.data.data;
       const { value, max, per } = relevantItem.data.data.uses ?? {};
 
+      // put the quantity in the name if relevant
+      const composedName = [relevantItem.name, (relevantItem.hasLimitedUses && quantity > 1) ? `(${quantity})` : undefined].filterJoin(' ');
+
+      // any item with charges -> Use the charges
+      if (relevantItem.hasLimitedUses) {
+        data.resources[resource] = {
+          label: composedName,
+          value,
+          max,
+          sr: per === 'sr',
+          lr: ['sr', 'lr'].includes(per),
+        }
+        return;
+      }
+
+      // in these cases we want to display the quantity as the value and max
+      // we also need special logic to adjust the quantity of the item when the resource numbers are updated
+      // we also also need to ensure the item fields are disabled
+
       data.resources[resource] = {
-        label: relevantItem.name,
-        value,
-        max,
-        sr: per === 'sr',
-        lr: ['sr', 'lr'].includes(per),
+        label: composedName,
+        value: quantity,
+        max: quantity,
+        sr: false,
+        lr: false,
       }
     });
   }
@@ -154,7 +189,7 @@ class LinkItemResource5eActor {
       return wrapped(updateRequest, ...args);
     }
 
-    const newUpdateRequest = {...foundry.utils.expandObject(updateRequest)};
+    const newUpdateRequest = { ...foundry.utils.expandObject(updateRequest) };
     const resourceUpdates = foundry.utils.getProperty(newUpdateRequest, `data.resources`);
 
     if (!resourceUpdates) {
@@ -173,10 +208,24 @@ class LinkItemResource5eActor {
 
     // construct item updates based on the updateData
     const itemUpdates = updatesToOverriddenResources
-      .map((resourceKey) => ({
-        _id: currentOverrides[resourceKey],
-        'data.uses.value': resourceUpdates[resourceKey].value,
-      }))
+      .map((resourceKey) => {
+        const itemId = currentOverrides[resourceKey];
+        const relevantItem = this.items.get(itemId);
+
+        // if the item has charges, update its charges
+        if (relevantItem.hasLimitedUses) {
+          return {
+            _id: currentOverrides[resourceKey],
+            'data.uses.value': resourceUpdates[resourceKey].value,
+          }
+        }
+
+        // else update its quantity
+        return {
+          _id: currentOverrides[resourceKey],
+          'data.quantity': resourceUpdates[resourceKey].value,
+        }
+      })
 
     // add the item updates to this update operation
     newUpdateRequest.items = [...(updateRequest?.items ?? []), ...itemUpdates];
@@ -238,8 +287,8 @@ class LinkItemResource5eActorSheet {
       return;
     }
 
-    this.disableDerivedResourceFields(resourceOverrides, html);
-    this.disableOverriddenItemFields(resourceOverrides, html);
+    this.disableDerivedResourceFields(resourceOverrides, html, actor);
+    this.disableOverriddenItemFields(resourceOverrides, html, actor);
   }
 
   /**
@@ -247,19 +296,30 @@ class LinkItemResource5eActorSheet {
    * @param {*} resourceOverrides
    * @param {*} html
    */
-  static disableDerivedResourceFields = (resourceOverrides, html) => {
-    const indexesToDisable = Object.keys(resourceOverrides).map(this.getIndexFromResourceName);
+  static disableDerivedResourceFields = (resourceOverrides, html, actor) => {
+    const indexesToDisable = Object.keys(resourceOverrides).map((resourceName) => {
+      return {
+        index: this.sheetResources.indexOf(resourceName),
+        itemId: resourceOverrides[resourceName]
+      }
+    });
     const resourceElements = html.find('.resource');
 
     // get the resources which have overrides to disable inputs
-    indexesToDisable.forEach(index => {
+    indexesToDisable.forEach(({ index, itemId }) => {
       const element = resourceElements[index];
 
       // disable every input except the `value` input
       $(element).find('[name]').filter((index, el) => !el.name.includes('value'))
         .prop('disabled', true)
         .prop('title', game.i18n.localize(`${LinkItemResource5e.MODULE_NAME}.disabled-resource-helper-text`));
-    })
+
+      // for cases where this isn't showing charges, delete the separator and max
+      if (!actor.items.get(itemId).hasLimitedUses) {
+        $(element).find('.sep').remove();
+        $(element).find('[name*="max"]').remove();
+      }
+    });
   }
 
   /**
@@ -269,7 +329,7 @@ class LinkItemResource5eActorSheet {
    * @param {*} html 
    * @returns 
    */
-  static disableOverriddenItemFields = (resourceOverrides, html) => {
+  static disableOverriddenItemFields = (resourceOverrides, html, actor) => {
     const itemIdsToDisable = Object.values(resourceOverrides);
 
     // get the resources which have overrides to disable inputs
@@ -277,6 +337,13 @@ class LinkItemResource5eActorSheet {
       html.find(`[data-item-id=${itemId}] .item-uses input, [data-item-id=${itemId}] .item-charges input`)
         .prop('disabled', true)
         .prop('title', game.i18n.localize(`${LinkItemResource5e.MODULE_NAME}.disabled-item-helper-text`));
+
+      // for cases where this isn't showing charges, delete the separator and max
+      if (!actor.items.get(itemId).hasLimitedUses) {
+        html.find(`[data-item-id=${itemId}] .item-quantity input`)
+          .prop('disabled', true)
+          .prop('title', game.i18n.localize(`${LinkItemResource5e.MODULE_NAME}.disabled-item-helper-text`));
+      }
     });
   }
 }

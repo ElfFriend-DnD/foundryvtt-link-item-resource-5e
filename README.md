@@ -9,14 +9,34 @@
 [![ko-fi](https://img.shields.io/badge/-buy%20me%20a%20coke-%23FF5E5B)](https://ko-fi.com/elffriend)
 [![patreon](https://img.shields.io/badge/-patreon-%23FF424D)](https://www.patreon.com/ElfFriend_DnD)
 
-Adds the ability to link an item's charges to an actor's resource and thus keep the two always in sync.
+Adds the ability to link an item's charges or quantity to an actor's resource and thus keep the two always in sync.
+
+Attempts to follow as much of the Item charge consumption logic from the core system as is reasonable. This allows for the following (known) use cases:
+
+- Display the Charges (and Quantities) of any Item/Feature/Spell with limited uses
+- Display the Quantities of Ammo Consumable Items (e.g. Arrows)
+- Display the Quantities Items which consume their own quantity as Ammo (e.g. Javelin)
+
+Each of these is also editable directly from the Resource indicator.
 
 ![An input is added to the item sheet.](https://user-images.githubusercontent.com/7644614/139600193-4f66564b-a274-4df7-8329-5cacca221da7.jpg)
 
 ![When configured, the item uses overrides the actor's resources.](https://user-images.githubusercontent.com/7644614/139600191-85f90ead-222a-4d5c-83a6-ff8d8c63134c.jpg)
 (Outlines added for demonstration)
 
+
 https://user-images.githubusercontent.com/7644614/139600186-1f0eaa5e-bc43-4867-9e8b-3fdbef217382.mp4
+
+<details>
+<summary>More Configuration Examples</summary>
+
+![Example of an Item with both Charges and Quantity displayed as Resource.](https://user-images.githubusercontent.com/7644614/141603970-57f0733f-8e21-4c60-bc1a-6b1036498c58.jpg)
+
+![Example of a Configuration with Arrow Quantity used as Resource.](https://user-images.githubusercontent.com/7644614/141603969-aa4b2513-6540-4220-a25b-3f6415fbaefe.jpg)
+
+![Example of self-consuming item.](https://user-images.githubusercontent.com/7644614/141603971-b917ca40-27b8-48ac-b88c-9a23e02f5cbc.jpg)
+</details>
+
 
 ## Compatibility Notes
 
