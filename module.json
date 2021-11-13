@@ -51,11 +51,20 @@
     },
     {
       "type": "screenshot",
-      "url": "https://user-images.githubusercontent.com/7644614/139600191-85f90ead-222a-4d5c-83a6-ff8d8c63134c.jpg"
+      "url": "https://user-images.githubusercontent.com/7644614/141604278-0399c865-16ae-442e-a6fb-a68456d66a38.jpg"
     },
     {
       "type": "screenshot",
-      "url": "https://user-images.githubusercontent.com/7644614/139600193-4f66564b-a274-4df7-8329-5cacca221da7.jpg"
+      "url": "https://user-images.githubusercontent.com/7644614/141603970-57f0733f-8e21-4c60-bc1a-6b1036498c58.jpg"
+    },
+    {
+      "type": "screenshot",
+      "url": "https://user-images.githubusercontent.com/7644614/141603971-b917ca40-27b8-48ac-b88c-9a23e02f5cbc.jpg"
+    },
+    {
+      "type": "video",
+      "url": "https://user-images.githubusercontent.com/7644614/139600186-1f0eaa5e-bc43-4867-9e8b-3fdbef217382.mp4",
+      "caption": "Demonstration of configuration."
     }
   ]
 }
