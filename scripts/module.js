@@ -203,7 +203,7 @@ class LinkItemResource5eActor {
 
     // abort if there's none we care about
     if (!updatesToOverriddenResources.length) {
-      return;
+      return wrapped(updateRequest, ...args);
     }
 
     // construct item updates based on the updateData
