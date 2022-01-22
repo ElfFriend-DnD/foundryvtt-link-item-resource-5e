@@ -33,7 +33,7 @@
     }
   ],
   "minimumCoreVersion": "0.8.9",
-  "compatibleCoreVersion": "0.8.9",
+  "compatibleCoreVersion": "9",
   "url": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e",
   "bugs": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/issues",
   "changelog": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/releases",
