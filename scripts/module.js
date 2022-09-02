@@ -19,6 +19,7 @@ class LinkItemResource5e {
 
     Hooks.on('renderItemSheet', LinkItemResource5eItemSheet.handleRender);
     Hooks.on('renderActorSheet5eCharacter', LinkItemResource5eActorSheet.handleActorSheetRender);
+    Hooks.on('dnd5e.preAdvancementManagerComplete', LinkItemResource5eActor.handlePreAdvancementComplete);
   }
 }
 
@@ -236,6 +237,37 @@ class LinkItemResource5eActor {
     });
 
     return wrapped(newUpdateRequest, ...args);
+  }
+
+  /**
+   * Handles advancements setting an actor's resources in the final update data, nulling out the quantities of overriden item resources.
+   * Mutates `updateData` to remove any nullifications that would happen
+   * @param {*} advancementManager 
+   * @param {*} updateData 
+   */
+  static handlePreAdvancementComplete(advancementManager, updateData) {
+    const { resourceOverrides: currentOverrides } = LinkItemResource5eActor.getResourceOverrides(advancementManager.clone.items);
+
+    if (!currentOverrides) {
+      // do nothing, move on
+      return;
+    }
+
+    const resourceUpdates = foundry.utils.getProperty(updateData, `data.resources`);
+
+    // array of resource keys which are being updated that have overrides
+    const updatesToOverriddenResources = Object.keys(resourceUpdates)
+      .filter((resource) => !!currentOverrides[resource]);
+
+    // abort if there's none we care about
+    if (!updatesToOverriddenResources.length) {
+      return;
+    }
+
+    // set the overridden resource update to undefined
+    updatesToOverriddenResources.forEach((resourceKey) => {
+      foundry.utils.setProperty(updateData, `data.resources.${resourceKey}`, undefined);
+    });
   }
 }
 
