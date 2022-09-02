@@ -149,8 +149,6 @@ class LinkItemResource5eActor {
       return;
     }
 
-    debugger;
-
     Object.entries(resourceOverrides).forEach(([resource, itemId]) => {
       const relevantItem = items.get(itemId)
       if (!relevantItem) return;
@@ -196,8 +194,6 @@ class LinkItemResource5eActor {
       // do nothing, move on
       return wrapped(updateRequest, ...args);
     }
-
-    debugger;
 
     const newUpdateRequest = { ...foundry.utils.expandObject(updateRequest) };
     const resourceUpdates = foundry.utils.getProperty(newUpdateRequest, `system.resources`);
