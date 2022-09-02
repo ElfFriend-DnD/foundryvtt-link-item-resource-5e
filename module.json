@@ -1,8 +1,8 @@
 {
-  "name": "link-item-resource-5e",
+  "id": "link-item-resource-5e",
   "title": "Link Item and Resource DnD5e",
   "description": "Links an Actor Resource to an Item's Charges",
-  "version": "1.2.2",
+  "version": "2.0.0",
   "author": "Andrew Krigline",
   "authors": [
     {
@@ -12,10 +12,6 @@
       "ko-fi": "elffriend",
       "patreon": "ElfFriend_DnD"
     }
-  ],
-  "system": [
-    "dnd5e",
-    "sw5e"
   ],
   "scripts": [
     "./scripts/module.js"
@@ -27,13 +23,24 @@
       "path": "lang/en.json"
     }
   ],
-  "dependencies": [
-    {
-      "name": "lib-wrapper"
-    }
-  ],
-  "minimumCoreVersion": "0.8.9",
-  "compatibleCoreVersion": "9",
+  "compatibility": {
+    "minimum": 10
+  },
+  "relationships": {
+    "systems": [{
+      "id": "dnd5e",
+      "type": "system",
+      "compatibility": {
+        "minimum": "2.0.0"
+      }
+    }],
+    "requires": [{
+      "id": "lib-wrapper",
+      "compatibility": {
+        "minimum": "1.12.7.1"
+      }
+    }]
+  },
   "url": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e",
   "bugs": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/issues",
   "changelog": "https://github.com/ElfFriend-DnD/foundryvtt-link-item-resource-5e/releases",

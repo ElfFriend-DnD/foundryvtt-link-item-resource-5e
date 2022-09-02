@@ -21,6 +21,12 @@ class LinkItemResource5e {
     Hooks.on('renderActorSheet5eCharacter', LinkItemResource5eActorSheet.handleActorSheetRender);
     Hooks.on('dnd5e.preAdvancementManagerComplete', LinkItemResource5eActor.handlePreAdvancementComplete);
   }
+
+  static log(...args) {
+    if (game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.MODULE_NAME)) {
+      console.log(this.MODULE_TITLE, '|', ...args);
+    }
+  }
 }
 
 Hooks.on("setup", LinkItemResource5e.setup);
@@ -45,10 +51,10 @@ class LinkItemResource5eItemSheet {
     const actor = item.actor;
 
     // javelins for example might be set to consume ammo of themselves
-    const isSelfConsumingAmmo = item.data.data.consume?.type === 'ammo' && item.data.data.consume?.target === item.id;
+    const isSelfConsumingAmmo = item.system.consume?.type === 'ammo' && item.system.consume?.target === item.id;
 
     // consumables with the subtype "ammo" include arrows
-    const isConsumableAmmo = (item.data.type === "consumable") && (item.data.data.consumableType === "ammo");
+    const isConsumableAmmo = (item.type === "consumable") && (item.system.consumableType === "ammo");
 
     const itemCanBeResource = item.hasLimitedUses || isSelfConsumingAmmo || isConsumableAmmo;
 
@@ -56,7 +62,7 @@ class LinkItemResource5eItemSheet {
       return;
     }
 
-    const resourceOptions = Object.keys(actor.data.data.resources)
+    const resourceOptions = Object.keys(actor.system.resources)
       .reduce((acc, resourceKey) => {
         acc[resourceKey] = game.i18n.localize(`DND5E.Resource${this.capitalizeFirstLetter(resourceKey)}`);
         return acc
@@ -75,7 +81,7 @@ class LinkItemResource5eItemSheet {
     } else if (isSelfConsumingAmmo) {
       el = html.find('.uses-per').last();
     } else {
-      el = html.find('[name="data.consumableType"]').parents('.form-group');
+      el = html.find('[name="system.consumableType"]').parents('.form-group');
     }
 
     el.after(select);
@@ -131,8 +137,7 @@ class LinkItemResource5eActor {
   static prepareDerivedResources(wrapped, ...args) {
     wrapped(...args);
 
-    const actorData = this.data;
-    const data = actorData.data;
+    const data = this.system;
     const items = this.items;
 
     // Record<resourceName, itemId>
@@ -144,11 +149,13 @@ class LinkItemResource5eActor {
       return;
     }
 
+    debugger;
+
     Object.entries(resourceOverrides).forEach(([resource, itemId]) => {
       const relevantItem = items.get(itemId)
       if (!relevantItem) return;
-      const { quantity } = relevantItem.data.data;
-      const { value, max, per } = relevantItem.data.data.uses ?? {};
+      const { quantity, uses } = relevantItem.system;
+      const { value, max, per } = uses;
 
       // put the quantity in the name if relevant
       const composedName = [relevantItem.name, (relevantItem.hasLimitedUses && quantity > 1) ? `(${quantity})` : undefined].filterJoin(' ');
@@ -190,8 +197,10 @@ class LinkItemResource5eActor {
       return wrapped(updateRequest, ...args);
     }
 
+    debugger;
+
     const newUpdateRequest = { ...foundry.utils.expandObject(updateRequest) };
-    const resourceUpdates = foundry.utils.getProperty(newUpdateRequest, `data.resources`);
+    const resourceUpdates = foundry.utils.getProperty(newUpdateRequest, `system.resources`);
 
     if (!resourceUpdates) {
       // do nothing, move on
@@ -217,14 +226,20 @@ class LinkItemResource5eActor {
         if (relevantItem.hasLimitedUses) {
           return {
             _id: currentOverrides[resourceKey],
-            'data.uses.value': resourceUpdates[resourceKey].value,
+            system: {
+              uses: {
+                value: resourceUpdates[resourceKey].value,
+              },
+            }
           }
         }
 
         // else update its quantity
         return {
           _id: currentOverrides[resourceKey],
-          'data.quantity': resourceUpdates[resourceKey].value,
+          system: {
+            quantity: resourceUpdates[resourceKey].value,
+          }
         }
       })
 
@@ -233,7 +248,7 @@ class LinkItemResource5eActor {
 
     // set the overridden resource update to undefined
     updatesToOverriddenResources.forEach((resourceKey) => {
-      foundry.utils.setProperty(newUpdateRequest, `data.resources.${resourceKey}`, undefined);
+      foundry.utils.setProperty(newUpdateRequest, `system.resources.${resourceKey}`, undefined);
     });
 
     return wrapped(newUpdateRequest, ...args);
@@ -253,7 +268,7 @@ class LinkItemResource5eActor {
       return;
     }
 
-    const resourceUpdates = foundry.utils.getProperty(updateData, `data.resources`);
+    const resourceUpdates = foundry.utils.getProperty(updateData, `system.resources`);
 
     // array of resource keys which are being updated that have overrides
     const updatesToOverriddenResources = Object.keys(resourceUpdates)
@@ -266,7 +281,7 @@ class LinkItemResource5eActor {
 
     // set the overridden resource update to undefined
     updatesToOverriddenResources.forEach((resourceKey) => {
-      foundry.utils.setProperty(updateData, `data.resources.${resourceKey}`, undefined);
+      foundry.utils.setProperty(updateData, `system.resources.${resourceKey}`, undefined);
     });
   }
 }
