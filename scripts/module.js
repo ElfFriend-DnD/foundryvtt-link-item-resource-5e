@@ -9,13 +9,16 @@ class LinkItemResource5e {
     resourceSelect: `modules/${this.MODULE_NAME}/templates/resource-select.hbs`
   }
 
-  static setup = () => {
+  static init = () => {
     console.log(`${this.MODULE_NAME} | Initializing ${this.MODULE_TITLE}`);
-
-    loadTemplates(Object.values(this.TEMPLATES));
-
     libWrapper.register(LinkItemResource5e.MODULE_NAME, 'CONFIG.Actor.documentClass.prototype.prepareData', LinkItemResource5eActor.prepareDerivedResources, "WRAPPER");
     libWrapper.register(LinkItemResource5e.MODULE_NAME, 'CONFIG.Actor.documentClass.prototype.update', LinkItemResource5eActor.prePreUpdateActor, "WRAPPER");
+  }
+
+  static setup = () => {
+    console.log(`${this.MODULE_NAME} | Setting up ${this.MODULE_TITLE}`);
+
+    loadTemplates(Object.values(this.TEMPLATES));
 
     Hooks.on('renderItemSheet', LinkItemResource5eItemSheet.handleRender);
     Hooks.on('renderActorSheet5eCharacter', LinkItemResource5eActorSheet.handleActorSheetRender);
@@ -29,6 +32,7 @@ class LinkItemResource5e {
   }
 }
 
+Hooks.on("init", LinkItemResource5e.init);
 Hooks.on("setup", LinkItemResource5e.setup);
 
 /**
