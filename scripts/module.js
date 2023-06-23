@@ -22,7 +22,7 @@ class LinkItemResource5e {
 
     Hooks.on('renderItemSheet', LinkItemResource5eItemSheet.handleRender);
     Hooks.on('renderActorSheet5eCharacter', LinkItemResource5eActorSheet.handleActorSheetRender);
-    Hooks.on('dnd5e.preAdvancementManagerComplete', LinkItemResource5eActor.handlePreAdvancementComplete);
+    Hooks.on(`${game.system.id}.preAdvancementManagerComplete`, LinkItemResource5eActor.handlePreAdvancementComplete);
   }
 
   static log(...args) {
@@ -68,7 +68,7 @@ class LinkItemResource5eItemSheet {
 
     const resourceOptions = Object.keys(actor.system.resources)
       .reduce((acc, resourceKey) => {
-        acc[resourceKey] = game.i18n.localize(`DND5E.Resource${this.capitalizeFirstLetter(resourceKey)}`);
+        acc[resourceKey] = game.i18n.localize(`${game.system.id.toUpperCase()}.Resource${this.capitalizeFirstLetter(resourceKey)}`);
         return acc
       }, {});
 
