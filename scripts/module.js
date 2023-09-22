@@ -141,6 +141,9 @@ class LinkItemResource5eActor {
   static prepareDerivedResources(wrapped, ...args) {
     wrapped(...args);
 
+    if (this.type === 'base')
+      return;
+
     const data = this.system;
     const items = this.items;
 
