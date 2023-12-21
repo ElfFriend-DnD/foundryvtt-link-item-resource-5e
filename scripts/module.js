@@ -230,7 +230,7 @@ class LinkItemResource5eActor {
             _id: currentOverrides[resourceKey],
             system: {
               uses: {
-                value: resourceUpdates[resourceKey].value,
+                value: resourceUpdates[resourceKey].value ?? 0,
               },
             }
           }
@@ -240,7 +240,7 @@ class LinkItemResource5eActor {
         return {
           _id: currentOverrides[resourceKey],
           system: {
-            quantity: resourceUpdates[resourceKey].value,
+            quantity: resourceUpdates[resourceKey].value?? 0,
           }
         }
       })
