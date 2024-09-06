@@ -281,9 +281,9 @@ class LinkItemResource5eActor {
       return;
     }
 
-    // set the overridden resource update to undefined
+    // set the overridden resource update to empty
     updatesToOverriddenResources.forEach((resourceKey) => {
-      foundry.utils.setProperty(updateData, `system.resources.${resourceKey}`, undefined);
+      foundry.utils.setProperty(updateData, `system.resources.${resourceKey}`,  {value: 0, max: 0, sr: false, lr: false, label: undefined});
     });
   }
 }

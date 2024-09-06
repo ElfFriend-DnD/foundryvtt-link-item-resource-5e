@@ -2,7 +2,7 @@
   "id": "link-item-resource-5e",
   "title": "Link Item and Resource DnD5e",
   "description": "Links an Actor Resource to an Item's Charges",
-  "version": "2.1.2",
+  "version": "2.1.4",
   "authors": [
     {
       "name": "Andrew Krigline",
@@ -31,7 +31,8 @@
       "id": "dnd5e",
       "type": "system",
       "compatibility": {
-        "minimum": "2.0.0"
+        "minimum": "3.3.0",
+        "maximum": "3.9.0"
       }
     },{
       "id": "sw5e",
