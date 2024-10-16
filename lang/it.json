@@ -1,0 +1,8 @@
+{
+  "link-item-resource-5e": {
+    "resource-link": "Sovrascrivi risorsa PG?",
+    "disabled-item-helper-text": "Collegato a una Risorsa",
+    "disabled-resource-helper-text": "Collegato ad un Oggetto",
+    "warn-multiple-overrides": "Più di un oggetto selezionato per sovrascrivere la stessa risorsa, il conteggio delle risorse potrebbe essere errato!"
+  }
+}
